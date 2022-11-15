@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+    <h3 th:if="${username}" th:text="${'Logged in as: ' + firstName + ' ' + lastName}"></h3>
+    <h1>Yeehaw! Welcome to Codefellers!</h1>
+    <a th:if="${username}" href="/secret">Secret Sauce?</a>
+    <a th:if="${username}" href="/logout">Logout</a>
+    <a th:if="!${username}" href="/login.html">Log In</a>
+    <br>
+    <a th:if="!${username}" href="/signup">Sign Up</a>
+</body>
+</html>
