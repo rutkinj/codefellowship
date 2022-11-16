@@ -7,7 +7,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.ServletException;
@@ -72,5 +75,39 @@ public class SiteUserController {
     @GetMapping("/sauce")
     public String getSauce(){
         return "secret";
+    }
+
+    @GetMapping("/myprofile")
+    public RedirectView getMyProfile(Principal p){
+        Long myId = siteUserRepository.findByUsername(p.getName()).getId();
+
+        return new RedirectView("/users/" + myId);
+    }
+
+    @GetMapping("users/{id}")
+    public String getUserInfo(Model m, Principal p, @PathVariable Long id){
+        SiteUser authenticatedUser = siteUserRepository.findByUsername(p.getName());
+        m.addAttribute("authenticatedUsername", authenticatedUser.getUsername());
+
+        SiteUser viewUser = siteUserRepository.findById(id).orElseThrow();
+        m.addAttribute("viewUsername", viewUser.getUsername());
+        m.addAttribute("viewUserId", viewUser.getId());
+        m.addAttribute("viewFirstName", viewUser.getFirstName());
+        m.addAttribute("viewLastName", viewUser.getLastName());
+
+        return "user-info";
+    }
+
+    @PutMapping("users/{id}")
+    public RedirectView editUserInfo(Model m, Principal p, @PathVariable Long id, String username, RedirectAttributes redirect) throws ServletException{
+        SiteUser userToEdit = siteUserRepository.findById(id).orElseThrow();
+        if (p.getName().equals(userToEdit.getUsername())){
+            userToEdit.setUsername(username);
+            siteUserRepository.save(userToEdit);
+            request.logout();
+        } else {
+            redirect.addFlashAttribute("errorMsg", "You lack authority");
+        }
+        return new RedirectView("/logout");
     }
 }
