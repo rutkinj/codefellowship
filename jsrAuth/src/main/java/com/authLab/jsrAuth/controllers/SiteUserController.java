@@ -39,7 +39,7 @@ public class SiteUserController {
             String username = p.getName();
             SiteUser foundUser = siteUserRepository.findByUsername(username);
 
-            m.addAttribute("username", username);
+            m.addAttribute("authenticatedUsername", username);
             m.addAttribute("firstName", foundUser.getFirstName());
             m.addAttribute("lastName", foundUser.getLastName());
         }
