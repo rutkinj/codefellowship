@@ -18,6 +18,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 public class SiteUserController {
@@ -88,6 +89,15 @@ public class SiteUserController {
         return new RedirectView("/users/" + myId);
     }
 
+    @GetMapping("users")
+    public String getAllUsers(Model m){
+        List<SiteUser> allUsers = siteUserRepository.findAll();
+
+        m.addAttribute("usersList", allUsers);
+
+        return "user-index";
+    }
+
     @GetMapping("users/{id}")
     public String getUserInfo(Model m, Principal p, @PathVariable Long id){
         SiteUser authenticatedUser = siteUserRepository.findByUsername(p.getName());
@@ -99,6 +109,8 @@ public class SiteUserController {
         m.addAttribute("viewFirstName", viewUser.getFirstName());
         m.addAttribute("viewLastName", viewUser.getLastName());
         m.addAttribute("posts", viewUser.getPostList());
+        m.addAttribute("following", viewUser.getFollowing());
+        m.addAttribute("followers", viewUser.getFollowers());
 
         return "user-info";
     }
@@ -123,5 +135,28 @@ public class SiteUserController {
         postRepository.save(newPost);
 
         return new RedirectView("/myprofile");
+    }
+
+    @PutMapping("/follow-user/{id}")
+    public RedirectView followUser(Principal p, @PathVariable Long id){
+        SiteUser userToFollow = siteUserRepository.findById(id).orElseThrow(() -> new RuntimeException("Error retrieving user from the database with an ID of: " + id));
+        SiteUser browsingUser = siteUserRepository.findByUsername(p.getName());
+
+        if(browsingUser.getUsername().equals(userToFollow.getUsername())){
+            throw new IllegalArgumentException("Get over yourself");
+        }
+        // access followers from browsingUser and update with new userToFollow
+        browsingUser.getFollowing().add(userToFollow);
+        siteUserRepository.save(browsingUser);
+        // save to db
+        return new RedirectView("/users/" + id);
+    }
+
+    @GetMapping("/feed")
+    public String showFeed(Model m, Principal p){
+        SiteUser user = siteUserRepository.findByUsername(p.getName());
+        m.addAttribute("following", user.getFollowing());
+        m.addAttribute("authenticatedUsername", p.getName());
+        return "feed";
     }
 }

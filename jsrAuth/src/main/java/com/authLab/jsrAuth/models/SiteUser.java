@@ -4,10 +4,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 public class SiteUser implements UserDetails {
@@ -20,6 +17,16 @@ public class SiteUser implements UserDetails {
     @OneToMany(mappedBy = "originalPoster")
     private Set<Post> postList;
 
+    @ManyToMany
+    @JoinTable(
+            name = "followData",
+            joinColumns = {@JoinColumn(name = "Follower")},
+            inverseJoinColumns = {@JoinColumn(name = "Following")})
+    Set<SiteUser> following = new HashSet<>();
+
+    @ManyToMany(mappedBy = "following")
+    Set<SiteUser> followers = new HashSet<>();
+
     protected SiteUser(){};
 
     public SiteUser(String username, String password, String firstName, String lastName) {
@@ -27,6 +34,17 @@ public class SiteUser implements UserDetails {
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+//    GETTERS SETTERS OVERRIDERS
+
+
+    public Set<SiteUser> getFollowing() {
+        return following;
+    }
+
+    public Set<SiteUser> getFollowers() {
+        return followers;
     }
 
     @Override
