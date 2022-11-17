@@ -18,6 +18,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 public class SiteUserController {
@@ -86,6 +87,15 @@ public class SiteUserController {
         Long myId = siteUserRepository.findByUsername(p.getName()).getId();
 
         return new RedirectView("/users/" + myId);
+    }
+
+    @GetMapping("users")
+    public String getAllUsers(Model m){
+        List<SiteUser> allUsers = siteUserRepository.findAll();
+
+        m.addAttribute("usersList", allUsers);
+
+        return "user-index";
     }
 
     @GetMapping("users/{id}")
