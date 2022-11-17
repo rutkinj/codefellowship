@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class SiteUser implements UserDetails {
@@ -15,8 +16,9 @@ public class SiteUser implements UserDetails {
     private String password;
     private String firstName;
     private String lastName;
+
     @OneToMany(mappedBy = "originalPoster")
-    private ArrayList<Post> postList;
+    private Set<Post> postList;
 
     protected SiteUser(){};
 
@@ -87,4 +89,13 @@ public class SiteUser implements UserDetails {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
+
+    public Set<Post> getPostList() {
+        return postList;
+    }
+
+    public void setPostList(Set<Post> postList) {
+        this.postList = postList;
+    }
+
 }

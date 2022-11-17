@@ -1,6 +1,8 @@
 package com.authLab.jsrAuth.controllers;
 
+import com.authLab.jsrAuth.models.Post;
 import com.authLab.jsrAuth.models.SiteUser;
+import com.authLab.jsrAuth.repositories.PostRepository;
 import com.authLab.jsrAuth.repositories.SiteUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +25,8 @@ public class SiteUserController {
     @Autowired
     SiteUserRepository siteUserRepository;
 
+    @Autowired
+    PostRepository postRepository;
     @Autowired
     PasswordEncoder passwordEncoder;
 
@@ -60,7 +64,7 @@ public class SiteUserController {
         SiteUser newUser = new SiteUser(username, hashedPass, firstName, lastName);
         siteUserRepository.save(newUser);
         authWithHttpServletRequest(username, password);
-        return new RedirectView("/");
+        return new RedirectView("/myprofile");
     }
 
     public void authWithHttpServletRequest(String username, String password){
@@ -94,6 +98,7 @@ public class SiteUserController {
         m.addAttribute("viewUserId", viewUser.getId());
         m.addAttribute("viewFirstName", viewUser.getFirstName());
         m.addAttribute("viewLastName", viewUser.getLastName());
+        m.addAttribute("posts", viewUser.getPostList());
 
         return "user-info";
     }
@@ -109,5 +114,14 @@ public class SiteUserController {
             redirect.addFlashAttribute("errorMsg", "You lack authority");
         }
         return new RedirectView("/logout");
+    }
+
+    @PostMapping("/post")
+    public RedirectView addNewPost(String postUserId, String body){
+        SiteUser op = siteUserRepository.findByUsername(postUserId);
+        Post newPost = new Post(op, body);
+        postRepository.save(newPost);
+
+        return new RedirectView("/myprofile");
     }
 }
