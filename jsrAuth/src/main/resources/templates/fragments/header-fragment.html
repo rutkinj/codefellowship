@@ -9,10 +9,12 @@
     <h3 th:if="${authenticatedUsername}" th:text="${'Logged in as: ' + authenticatedUsername}"></h3>
     <nav th:if="${authenticatedUsername}">
       <a href="/myprofile"> My Profile </a>
-      <div></div>
+      <br>
       <a href="/logout"> Logout </a>
-      <div></div>
+      <br>
       <a href="/users"> Users Index </a>
+      <br>
+      <a href="/feed"> Feed </a>
     </nav>
 
     <nav th:if="!${authenticatedUsername}">

@@ -151,4 +151,12 @@ public class SiteUserController {
         // save to db
         return new RedirectView("/users/" + id);
     }
+
+    @GetMapping("/feed")
+    public String showFeed(Model m, Principal p){
+        SiteUser user = siteUserRepository.findByUsername(p.getName());
+        m.addAttribute("following", user.getFollowing());
+        m.addAttribute("authenticatedUsername", p.getName());
+        return "feed";
+    }
 }

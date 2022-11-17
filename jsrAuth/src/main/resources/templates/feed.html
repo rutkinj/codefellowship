@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Feed</title>
+</head>
+<body>
+
+<div th:replace="/fragments/header-fragment :: header"></div>
+
+<div th:each="user : ${following}">
+  <h3 th:text="${user.getUsername()}"></h3>
+  <ul th:each="post : ${user.getPostList()}">
+    <h2 th:text="${post.getBody()}"></h2>
+    <li th:text="' Posted on-> ' + ${post.getTimeStamp()}"></li>
+  </ul>
+</div>
+</body>
+</html>
