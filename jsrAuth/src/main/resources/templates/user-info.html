@@ -18,6 +18,7 @@
     <input th:if="${authenticatedUsername.equals(viewUsername)}" type="submit" value="Edit User Info">
 </form>
 
+<!-- Posts -->
 <form th:action="${'/post'}" th:method="POST" th:if="${authenticatedUsername.equals(viewUsername)}">
     <input type="hidden" name="postUserId" th:value="${authenticatedUsername}">
     <input type="text" name="body">
@@ -30,5 +31,21 @@
     <li th:text="' Posted on-> ' + ${post.getTimeStamp()}"></li>
 </ul>
 
+<!-- Followers -->
+<form th:action="${'/follow-user/' + viewUserId}" th:method="PUT">
+    <input type="hidden" th:value="${viewUserId}">
+    <input type="submit" value="Follow User" th:disabled="${authenticatedUsername.equals(viewUsername)}">
+    <!--  submit input that is disabled if you try to follow yourself-->
+</form>
+
+<h2>Following</h2>
+<ul th:each="followedUser : ${following}">
+    <li th:text="${followedUser.username}"></li>
+</ul>
+
+<h2>Followers</h2>
+<ul th:each="follower : ${followers}">
+    <li th:text="${follower.username}"></li>
+</ul>
 </body>
 </html>

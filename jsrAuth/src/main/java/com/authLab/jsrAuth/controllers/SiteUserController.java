@@ -99,6 +99,8 @@ public class SiteUserController {
         m.addAttribute("viewFirstName", viewUser.getFirstName());
         m.addAttribute("viewLastName", viewUser.getLastName());
         m.addAttribute("posts", viewUser.getPostList());
+        m.addAttribute("following", viewUser.getFollowing());
+        m.addAttribute("followers", viewUser.getFollowers());
 
         return "user-info";
     }
@@ -123,5 +125,20 @@ public class SiteUserController {
         postRepository.save(newPost);
 
         return new RedirectView("/myprofile");
+    }
+
+    @PutMapping("/follow-user/{id}")
+    public RedirectView followUser(Principal p, @PathVariable Long id){
+        SiteUser userToFollow = siteUserRepository.findById(id).orElseThrow(() -> new RuntimeException("Error retrieving user from the database with an ID of: " + id));
+        SiteUser browsingUser = siteUserRepository.findByUsername(p.getName());
+
+        if(browsingUser.getUsername().equals(userToFollow.getUsername())){
+            throw new IllegalArgumentException("Get over yourself");
+        }
+        // access followers from browsingUser and update with new userToFollow
+        browsingUser.getFollowing().add(userToFollow);
+        siteUserRepository.save(browsingUser);
+        // save to db
+        return new RedirectView("/users/" + id);
     }
 }
